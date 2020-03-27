@@ -16,20 +16,20 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-  let tweet_reg = /https?:\/\/twitter\.com\/\w+\/status\/(\d+)/;
-  let url_match = message.content.match(tweet_reg);
+  const tweet_reg = new RegExp('https?://twitter.com/\\w+/status/(\\d+)');
+  const url_match = message.content.match(tweet_reg);
   if (!url_match) return;
 
-  let params = {tweet_mode: 'extended'}
+  const params = {tweet_mode: 'extended'};
   twitter.get(`statuses/show/${url_match[1]}`, params, (error, tweet) => {
     if (error) return;
 
-    if (!(tweet.extended_entities)) return;
-    let media = tweet.extended_entities.media;
+    if (!tweet.extended_entities) return;
+    const media = tweet.extended_entities.media;
     if (!media || media[0].type !== 'photo' || !media[1]) return;
 
-    let urls = [];
-    for (let medium of media.slice(1)) urls.push(medium.media_url_https);
+    const urls = [];
+    for (const medium of media.slice(1)) urls.push(medium.media_url_https);
     message.channel.send(urls.join('\n'));
   });
 });
